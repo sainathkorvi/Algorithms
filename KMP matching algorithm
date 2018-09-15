@@ -1,0 +1,76 @@
+namespace KMP
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var result = GetSubstringIndex("abcdabcabcday", "abcabcda");
+        }
+
+
+        private static int GetSubstringIndex(string inputString, string pattern)
+        {
+            var array = PrefixSuffixArray(pattern);
+            int result = -1;
+
+            for(int i = 0, j = 0; i < inputString.Length; i++)
+            {
+                if (j == pattern.Length)
+                    return i - j;
+
+                if (inputString[i] != pattern[j])
+                    j = array[j - 1];
+
+                if (inputString[i] == pattern[j])
+                {
+                    j++;
+                }
+            }
+
+            return result;
+        }
+        private static int[] PrefixSuffixArray(string pattern)
+        {
+            int[] patternIndex = new int[pattern.Length];
+            int j = 0, i = 1, k = 1;
+            while(i < pattern.Length)
+            {
+                if (pattern[i] == pattern[j])
+                    patternIndex[i] = ++j;
+                else
+                {
+                    var retry = true;
+                    var preCheck = j - 1;
+                    while(retry)
+                    {
+                        if(preCheck < 0)
+                        {
+                            patternIndex[i] = 0;
+                            j = 0;
+                            retry = false;
+                        }
+                        else if (pattern[patternIndex[preCheck]] == pattern[i])
+                        {
+                            patternIndex[i] = patternIndex[preCheck] + 1;
+                            j = patternIndex[i] + 1;
+                            retry = false;
+                        }
+                        else
+                        {
+                            if (preCheck - 1 > 0)
+                                preCheck = patternIndex[preCheck - 1];
+                            else
+                            {
+                                patternIndex[i] = 0;
+                                j = 0;
+                                retry = false;
+                            }
+                        }
+                    }
+                }
+                i++;
+            }
+            return patternIndex;
+        }
+    }
+}
