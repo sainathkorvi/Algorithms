@@ -1,0 +1,56 @@
+    public class LongestCommonSubsequence
+    {
+        public int GetNumberOfLongestSubsequenceCharacters(string input1, string input2)
+        {
+            return BuildSubsequentCharactersArray(input1, input2)[input2.Length][input1.Length];
+        }
+
+        public string GetLongestSubsequentCharacters(string input1, string input2)
+        {
+            var result = "";
+
+            var subsequentArray = BuildSubsequentCharactersArray(input1, input2);
+
+            for(int i = input2.Length, j = input1.Length; i > 0;)
+            {
+                if(Math.Max(subsequentArray[i - 1][j], subsequentArray[i][j - 1]) != subsequentArray[i][j])
+                {
+                    result = input2[i - 1] + result;
+                    i--; j--;
+                }
+                else if(subsequentArray[i - 1][j] == subsequentArray[i][j])
+                    i--;
+                else
+                    j--;
+            }
+
+            return result;
+        }
+        
+        private int[][] BuildSubsequentCharactersArray(string input1, string input2)
+        {
+            int[][] resultArray = new int[input2.Length + 1][];
+
+            for (int i = 0; i <= input2.Length; i++)
+                resultArray[i] = new int[input1.Length + 1];
+            var foundDictionary = new Dictionary<char, int>();
+
+            for (int i = 1; i <= input2.Length; i++)
+            {
+                for (int j = 1; j <= input1.Length; j++)
+                {
+                    if (input2[i - 1] == input1[j - 1])
+                    {
+                        //if (++presentFoundCount == foundDictionary[input2[i - 1]])
+                        {
+                            resultArray[i][j] = resultArray[i - 1][j - 1] + 1;
+                        }
+                    }
+                    else
+                        resultArray[i][j] = Math.Max(resultArray[i - 1][j], resultArray[i][j - 1]);
+                }
+            }
+
+            return resultArray;
+        }
+    }
