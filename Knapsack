@@ -1,0 +1,69 @@
+public class KnapsackProblem
+    {
+        public int GetMaxValueFromWeightsUsingKnapsack(int[] weights, int[] values, int maxWeight)
+        {
+            var memo = GetMemoizedArray(weights, values, maxWeight);
+            return memo[weights.Length - 1][maxWeight];
+        }
+
+        public List<int> GetWeightsIncludedUsingKnapsack(int[] weights, int[] values, int maxWeight)
+        {
+            var memo = GetMemoizedArray(weights, values, maxWeight);
+            var result = new List<int>();
+            var maxValue = memo[weights.Length - 1][maxWeight];
+            int i = weights.Length - 1, j = maxWeight;
+
+            while (maxValue != 0)
+            {
+                if (memo[i][j] == memo[i - 1][j])
+                    --i;
+                else
+                {
+                    result.Add(weights[i]);
+                    j -= weights[i];
+                    maxValue -= values[i];
+                    --i;
+                }
+            }
+
+            return result;
+        }
+
+        private int[][] GetMemoizedArray(int[] weights, int[] values, int maxWeight)
+        {
+            int[,] sortedArray = new int[weights.Length, weights.Length];
+            int max;
+            for(int i = 0; i < weights.Length; i++)
+            {
+                var min = i;
+                for (int j = i + 1; j < weights.Length; j++)
+                {
+                    if (weights[min] > weights[j]) min = j;
+                }
+                sortedArray[i, 0] = weights[min];
+                sortedArray[i, 1] = values[min];
+            }
+            max = sortedArray[weights.Length - 1, 0];
+
+            int[][] memoArray = new int[weights.Length][];
+
+            for (int i = 0; i < weights.Length; i++)
+            {
+                memoArray[i] = new int[maxWeight + 1];
+                int currentWeightIndex = i;
+                int currentWeight = sortedArray[i, 0];
+
+                for(int j = 1; j <= maxWeight; j++)
+                {
+                    if (currentWeight <= j)
+                    {
+                        memoArray[i][j] = i > 0 ? Math.Max(sortedArray[i, 1] + memoArray[i - 1][j - currentWeight], memoArray[i - 1][j]) : sortedArray[i, 1];
+                    }
+                    else
+                        memoArray[i][j] = memoArray[i - 1][j];
+                }
+            }
+            return memoArray;
+
+        }
+    }
