@@ -1,0 +1,40 @@
+        public int[,] GetMemoArray(int[,] keyValues)
+        {
+            var length = keyValues.GetLength(1);
+            var memoArray = new int[length, length];
+
+            for (int i = 0; i < length; i++) memoArray[i, i] = keyValues[1, i];
+
+            for (int l = 2; l <= length; l++)
+            {
+                for (int i = 0; i <= length - l; i++)
+                {
+                    int j = i + l - 1;
+                    var sum = GetSum(keyValues, i, j);
+                    memoArray[i, j] = int.MaxValue /10;
+
+                    for (int k = i; k <= j; k++)
+                    {
+                        var cost = (k > i ? memoArray[i, k - 1] : 0) + (k < j ? memoArray[k + 1, j] : 0) + sum;
+                        if (cost < memoArray[i, j])
+                        {
+                            memoArray[i, j] = cost;
+                        }
+                    }
+                }
+            }
+
+            return memoArray;
+        }
+
+        private int GetSum(int[,] keyValues, int i, int j)
+        {
+            var to = i;
+            int sum = 0;
+            while (to <= j)
+            {
+                sum += keyValues[1, to];
+                to++;
+            }
+            return sum;
+        }
